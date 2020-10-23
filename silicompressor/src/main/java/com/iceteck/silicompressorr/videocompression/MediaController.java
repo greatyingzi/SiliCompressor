@@ -52,7 +52,9 @@ public class MediaController {
     //Default values
     private final static int DEFAULT_VIDEO_WIDTH = 640;
     private final static int DEFAULT_VIDEO_HEIGHT = 360;
-    private final static int DEFAULT_VIDEO_BITRATE = 450000;
+    private final static int DEFAULT_VIDEO_BITRATE = 2000000;
+    private final static int DEFAULT_FRAME_RATE = 30;
+    private final static int DEFAULT_I_FRAME_INTERVAL = 2;
 
     public static MediaController getInstance(Context context) {
         MediaController localInstance = Instance;
@@ -311,6 +313,7 @@ public class MediaController {
         String width = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT);
         String height = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH);
         String rotation = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_ROTATION);
+        String bitrate = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_BITRATE);
 
         long startTime = -1;
         long endTime = -1;
@@ -321,9 +324,27 @@ public class MediaController {
         int rotationValue = Integer.valueOf(rotation);
         int originalWidth = Integer.valueOf(width);
         int originalHeight = Integer.valueOf(height);
+        int originalBitrate = Integer.valueOf(bitrate);
 
-        int bitrate = outBitrate > 0 ? outBitrate : DEFAULT_VIDEO_BITRATE;
+
+        int resultBitrate = outBitrate > 0 ? outBitrate : DEFAULT_VIDEO_BITRATE;
         int rotateRender = 0;
+
+        resultWidth = originalHeight;
+        resultHeight = originalWidth;
+        resultBitrate = originalBitrate;
+
+        if (resultBitrate <= 10 * 10000) {
+
+        } else if (resultBitrate <= 100 * 10000) {
+            resultBitrate = 60 * 10000;
+        } else if (resultBitrate <= 5 * 100 * 10000) {
+            resultBitrate = 100 * 10000;
+        } else if (resultBitrate <= 10 * 100 * 10000) {
+            resultBitrate = 5 * 100 * 10000;
+        } else {
+            resultBitrate = 5 * 100 * 10000;
+        }
 
         File cacheFile = null;
         try {
@@ -490,9 +511,9 @@ public class MediaController {
 
                         MediaFormat outputFormat = MediaFormat.createVideoFormat(MIME_TYPE, resultWidth, resultHeight);
                         outputFormat.setInteger(MediaFormat.KEY_COLOR_FORMAT, colorFormat);
-                        outputFormat.setInteger(MediaFormat.KEY_BIT_RATE, bitrate != 0 ? bitrate : 921600);
-                        outputFormat.setInteger(MediaFormat.KEY_FRAME_RATE, 25);
-                        outputFormat.setInteger(MediaFormat.KEY_I_FRAME_INTERVAL, 10);
+                        outputFormat.setInteger(MediaFormat.KEY_BIT_RATE, resultBitrate != 0 ? resultBitrate : 921600);
+                        outputFormat.setInteger(MediaFormat.KEY_FRAME_RATE, DEFAULT_FRAME_RATE);
+                        outputFormat.setInteger(MediaFormat.KEY_I_FRAME_INTERVAL, DEFAULT_I_FRAME_INTERVAL);
                         if (Build.VERSION.SDK_INT < 18) {
                             outputFormat.setInteger("stride", resultWidth + 32);
                             outputFormat.setInteger("slice-height", resultHeight);

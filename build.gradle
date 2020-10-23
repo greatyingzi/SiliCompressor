@@ -2,7 +2,14 @@
 
 buildscript {
     repositories {
-        jcenter()
+        maven { url "http://nexus.qknode.com/repository/android" }
+        maven { url 'https://maven.aliyun.com/repository/public' }
+        maven { url 'https://maven.aliyun.com/repository/jcenter' }
+        maven { url 'https://maven.aliyun.com/repository/central' }
+        maven { url 'https://maven.aliyun.com/repository/google' }
+        maven { url "http://dl.bintray.com/tencentqcloudterminal/maven" }
+        maven { url "https://jitpack.io" }
+        mavenCentral()
         google()
     }
     dependencies {
@@ -17,7 +24,14 @@ buildscript {
 
 allprojects {
     repositories {
-        jcenter()
+        maven { url "http://nexus.qknode.com/repository/android" }
+        maven { url 'https://maven.aliyun.com/repository/public' }
+        maven { url 'https://maven.aliyun.com/repository/jcenter' }
+        maven { url 'https://maven.aliyun.com/repository/central' }
+        maven { url 'https://maven.aliyun.com/repository/google' }
+        maven { url "http://dl.bintray.com/tencentqcloudterminal/maven" }
+        maven { url "https://jitpack.io" }
+        mavenCentral()
         google()
     }
 }

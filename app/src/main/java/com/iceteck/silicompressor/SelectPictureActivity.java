@@ -16,6 +16,7 @@ import android.provider.MediaStore;
 import android.provider.OpenableColumns;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -47,6 +48,7 @@ public class SelectPictureActivity extends AppCompatActivity {
     private static final int MY_PERMISSIONS_REQUEST_WRITE_STORAGE = 1;
     private static final int MY_PERMISSIONS_REQUEST_WRITE_STORAGE_VID = 2;
     private static final int REQUEST_TAKE_VIDEO = 200;
+    private static final int REQUEST_SELECT_VIDEO = 300;
     private static final int TYPE_IMAGE = 1;
     private static final int TYPE_VIDEO = 2;
 
@@ -54,6 +56,7 @@ public class SelectPictureActivity extends AppCompatActivity {
     Uri capturedUri = null;
     Uri compressUri = null;
     ImageView imageView;
+    Button select;
     TextView picDescription;
     private ImageView videoImageView;
     LinearLayout compressionMsg;
@@ -69,10 +72,54 @@ public class SelectPictureActivity extends AppCompatActivity {
         videoImageView = findViewById(R.id.videoImageView);
         picDescription = findViewById(R.id.pic_description);
         compressionMsg = findViewById(R.id.compressionMsg);
+        select = findViewById(R.id.select);
 
         imageView.setOnClickListener(v -> requestPermissions(TYPE_IMAGE));
 
         videoImageView.setOnClickListener(view -> requestPermissions(TYPE_VIDEO));
+
+        select.setOnClickListener(view -> {
+            Intent takeVideoIntent = new Intent(Intent.ACTION_PICK);
+            takeVideoIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            takeVideoIntent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+            takeVideoIntent.addFlags(Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION);
+            if (takeVideoIntent.resolveActivity(getPackageManager()) != null) {
+                try {
+
+                    takeVideoIntent.putExtra(MediaStore.EXTRA_DURATION_LIMIT, 10);
+                    takeVideoIntent.putExtra(MediaStore.EXTRA_VIDEO_QUALITY, 1);
+                    capturedUri = FileProvider.getUriForFile(this,
+                            getPackageName() + FILE_PROVIDER_AUTHORITY,
+                            createMediaFile(TYPE_VIDEO));
+
+                    takeVideoIntent.putExtra(MediaStore.EXTRA_OUTPUT, capturedUri);
+                    takeVideoIntent.setDataAndType(
+                            MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+                            "video/*");
+                    Log.d(LOG_TAG, "VideoUri: " + capturedUri.toString());
+                    startActivityForResult(takeVideoIntent, REQUEST_SELECT_VIDEO);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+            }
+/*
+
+            Intent intent = new Intent(Intent.ACTION_PICK);
+            try {
+                capturedUri = FileProvider.getUriForFile(this,
+                        getPackageName() + FILE_PROVIDER_AUTHORITY,
+                        createMediaFile(TYPE_VIDEO));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            intent.setDataAndType(
+                    MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+                    "video/*");
+            intent.putExtra(MediaStore.EXTRA_OUTPUT, capturedUri);
+
+            startActivityForResult(intent, REQUEST_SELECT_VIDEO);*/
+        });
     }
 
     /**
@@ -240,6 +287,27 @@ public class SelectPictureActivity extends AppCompatActivity {
                 }
 
             }
+        } else if (requestCode == 300 && resultCode == RESULT_OK) {
+            data.getData();
+            Uri selectedviedo = data.getData();
+            File f = new File(getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES) + "/Silicompressor/videos");
+            if (f.mkdirs() || f.isDirectory()) {
+                //compress and output new video specs
+                //new VideoCompressAsyncTask(this).execute("true", mCurrentPhotoPath, f.getPath());
+                new VideoCompressAsyncTask(this.getApplicationContext()).execute("false", selectedviedo.toString(), f.getPath());
+            }
+         /*   String[] viedoPathColumn = {MediaStore.Video.Media.DATA,
+                    MediaStore.Video.Media.DURATION};
+            Cursor cursor = getContentResolver().query(selectedviedo,
+                    viedoPathColumn, null, null, null);
+            cursor.moveToFirst();
+            int columnIndex = cursor.getColumnIndex(viedoPathColumn[0]);
+            int columnIndexs = cursor.getColumnIndex(viedoPathColumn[1]);
+            String videoPath = cursor.getString(columnIndex);//视频路径
+            Long times = cursor.getLong(columnIndexs);//视频长度单位毫秒
+            Date dates = new Date(times);
+            SimpleDateFormat sdf = new SimpleDateFormat("mm:ss");
+            cursor.close();*/
         }
 
     }
