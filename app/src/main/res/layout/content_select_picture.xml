@@ -27,13 +27,13 @@
             android:id="@+id/photo"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_photo_camera_white_48px" />
+            app:srcCompat="@drawable/ic_photo_camera_white_48px" />
 
         <ImageView
             android:id="@+id/videoImageView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_videocam_grey_700_48dp" />
+            app:srcCompat="@drawable/ic_videocam_grey_700_48dp" />
 
         <Button
             android:text="选择"

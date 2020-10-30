@@ -11,11 +11,10 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
+import android.support.media.ExifInterface;
+import android.support.v4.content.FileProvider;
 import android.util.Log;
-
-import androidx.annotation.NonNull;
-import androidx.core.content.FileProvider;
-import androidx.exifinterface.media.ExifInterface;
 
 import com.iceteck.silicompressorr.videocompression.MediaController;
 
@@ -343,7 +342,7 @@ public class SiliCompressor {
             canvas.drawBitmap(bmp, middleX - bmp.getWidth() / 2, middleY - bmp.getHeight() / 2, new Paint(Paint.FILTER_BITMAP_FLAG));
 
             // check the rotation of the image and display it properly
-            androidx.exifinterface.media.ExifInterface exif;
+            ExifInterface exif;
             try {
                 exif = new ExifInterface(mContext.getContentResolver().openInputStream(imageUri));
 

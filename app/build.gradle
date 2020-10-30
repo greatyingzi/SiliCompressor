@@ -25,12 +25,14 @@ android {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     testImplementation 'junit:junit:4.12'
-    implementation 'androidx.appcompat:appcompat:1.1.0'
+    implementation 'com.android.support:appcompat-v7:' + "${rootProject.ext.supportVersion}"
+    implementation 'com.googlecode.mp4parser:isoparser:1.1.22'
+    implementation 'com.android.support:exifinterface:' + "${rootProject.ext.supportVersion}"
+    implementation 'com.android.support:support-v4:' + "${rootProject.ext.supportVersion}"
 
-    implementation 'com.google.android.material:material:1.1.0'
+    implementation 'com.android.support:design:' + "${rootProject.ext.supportVersion}"
     implementation project(':silicompressor')
 
-    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
 
 //    implementation 'com.github.LuckSiege.PictureSelector:picture_library:v2.5.9'
 
